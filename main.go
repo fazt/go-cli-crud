@@ -13,7 +13,7 @@ import (
 )
 
 func main() {
-	// Abrir el archivo de tareas o crearlo si no existe
+	// read or create the tasks.json file
 	file, err := os.OpenFile("tasks.json", os.O_RDWR|os.O_CREATE, 0666)
 	if err != nil {
 		panic(err)
@@ -22,11 +22,14 @@ func main() {
 
 	var tasks []task.Task
 
-	// Leer todas las tareas desde el archivo
+	// get file info
 	info, err := file.Stat()
+
 	if err != nil {
 		panic(err)
 	}
+
+	// check the size
 	if info.Size() != 0 {
 		bytes, err := io.ReadAll(file)
 		if err != nil {
@@ -40,11 +43,12 @@ func main() {
 		tasks = []task.Task{}
 	}
 
-	// Analizar los argumentos de la línea de comandos y llamar a la función correspondiente
+	// check the user input and print options to choose
 	if len(os.Args) < 2 {
 		printUsage()
 		return
 	}
+
 	switch os.Args[1] {
 	case "list":
 		task.ListTasks(tasks)

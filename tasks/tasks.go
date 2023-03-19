@@ -13,22 +13,23 @@ type Task struct {
 	Complete bool   `json:"complete"`
 }
 
-// Listar todas las tareas
+// list all tasks from the array with an icon
 func ListTasks(tasks []Task) {
 	if len(tasks) == 0 {
 		fmt.Println("No hay tareas.")
 		return
 	}
+
 	for _, task := range tasks {
 		status := " "
 		if task.Complete {
-			status = "x"
+			status = "✓"
 		}
 		fmt.Printf("[%s] %d: %s\n", status, task.ID, task.Name)
 	}
 }
 
-// Agregar una nueva tarea con el nombre dado
+// add a new task to the array
 func AddTask(tasks []Task, name string) []Task {
 	newTask := Task{
 		ID:       GetNextID(tasks),
@@ -38,7 +39,7 @@ func AddTask(tasks []Task, name string) []Task {
 	return append(tasks, newTask)
 }
 
-// Marcar la tarea con el ID dado como completada
+// search task with id and mark as completed
 func CompleteTask(tasks []Task, id int) []Task {
 	for i, task := range tasks {
 		if task.ID == id {
@@ -49,8 +50,7 @@ func CompleteTask(tasks []Task, id int) []Task {
 	return tasks
 }
 
-// Eliminar la tarea
-// con el ID dado
+// Delete a task with an id
 func DeleteTask(tasks []Task, id int) []Task {
 	for i, task := range tasks {
 		if task.ID == id {
@@ -60,7 +60,7 @@ func DeleteTask(tasks []Task, id int) []Task {
 	return tasks
 }
 
-// Obtener el siguiente ID disponible para una nueva tarea
+// get the next available id for the next task
 func GetNextID(tasks []Task) int {
 	if len(tasks) == 0 {
 		return 1
@@ -68,25 +68,34 @@ func GetNextID(tasks []Task) int {
 	return tasks[len(tasks)-1].ID + 1
 }
 
-// Guardar todas las tareas en el archivo
+// save all tasks in a json file
 func SaveTasks(file *os.File, tasks []Task) {
+	// convert to a json file
 	bytes, err := json.Marshal(tasks)
 	if err != nil {
 		panic(err)
 	}
+
+	// move the pointer at the start
 	_, err = file.Seek(0, 0)
 	if err != nil {
 		panic(err)
 	}
+
+	// clean the entier file or delete everything
 	err = file.Truncate(0)
 	if err != nil {
 		panic(err)
 	}
+
+	// write the file
 	writer := bufio.NewWriter(file)
 	_, err = writer.Write(bytes)
 	if err != nil {
 		panic(err)
 	}
+
+	// make sure the content was written
 	err = writer.Flush()
 	if err != nil {
 		panic(err)
